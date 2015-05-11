@@ -44,7 +44,7 @@ router.get('/wx/callback', function(req, res) {
     });
 
   } else {
-   unirest.get(url).end(function(response) {
+    unirest.get(url).end(function(response) {
       var json = JSON.parse(response.body);
 
       url = 'https://api.weixin.qq.com/sns/userinfo?access_token=' +
