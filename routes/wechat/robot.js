@@ -1,10 +1,11 @@
-var express = require('express');
-var router = express.Router();
-var crypto = require('crypto');
+var express   = require('express');
+var router    = express.Router();
+var crypto    = require('crypto');
 //var unirest = require('unirest');
-var xmlbuilder = require('xmlbuilder');
-var wx_config = require('../../config/wx_config')
-var xmlBodyParser = require('../../lib/xml-body-parser');
+var xmlbuilder= require('xmlbuilder');
+var config    = require('../../config/wechat');
+var xmlBodyParser = require('../../lib/xmlBodyParser');
+var debug     = true;
 
 router.all('/', xmlBodyParser);
 /**
@@ -12,13 +13,13 @@ router.all('/', xmlBodyParser);
  * @param req
  * @param res
  */
- router.get('/', function(req, res) {
+router.get('/', function(req, res) {
   if (!checkSource(req)) {
       res.end('token or other parm is error! ');
       return;
   }
   res.end(req.query.echostr);
- });
+});
 
 /**
  * 处理POST请求
@@ -37,9 +38,12 @@ router.post('/', function (req, res) {
     Content: 'reply by server:' + req.body.xml.Content[0]
   });
   xml += "";
-  console.log("res: " + xml);
-  res.end(xml);
 
+  if (debug) {
+    console.log("res: " + xml);
+  }
+
+  res.end(xml);
 });
 
 
@@ -61,21 +65,25 @@ function buildXml(req, obj) {
 
   if (obj.MsgType === 'text') {
 
-    xmlObj.xml["Content"] = obj.Content;
+    xmlObj.xml.Content = obj.Content;
 
+  // TODO: other types
   } else if (obj.MsgType === 'image') {
 
-    xmlObj.xml["Image"] = {
+    xmlObj.xml.Image = {
       MediaId: {
         "#cdata": 'media_id'
       }
-    }
+    };
 
   }
 
   xmlObj = xmlbuilder.create(xmlObj);
 
-  //console.log(xmlObj.end({pretty: true}));
+  if (debug) {
+    console.log(xmlObj.end({pretty: true}));
+  }
+
   return xmlObj.end().substr(21);
 }
 
@@ -87,12 +95,16 @@ function buildXml(req, obj) {
 function checkSource(req) {
   var signature = req.query.signature,
       timestamp = req.query.timestamp,
-      nonce = req.query.nonce,
-      shasum = crypto.createHash('sha1'),
-      token = wx_config.token,
-      arr = [token, timestamp, nonce];
+      nonce     = req.query.nonce,
+      shasum    = crypto.createHash('sha1'),
+      token     = config.token,
+      arr       = [token, timestamp, nonce];
   shasum.update(arr.sort().join(''));
-  console.log(arr.sort().join(',') + "," + signature);
+
+  if (debug) {
+    console.log(arr.sort().join(',') + "," + signature);
+  }
+
   return shasum.digest('hex') == signature;
 }
 

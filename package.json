@@ -21,6 +21,8 @@
     "xml2js": "0.4.4",
     "xmlbuilder": "2.4.5",
 
-    "urlencode": "~1.0.0"
+    "urlencode": "~1.0.0",
+    "extend": "~2.0.1",
+    "uuid": "~2.0.1"
   }
 }

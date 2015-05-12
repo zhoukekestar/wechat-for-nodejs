@@ -1,16 +1,21 @@
-var lean = require('./lib/leancloud');
+var leancloud = require('./lib/leancloud.js');
+var uuid = require('uuid');
+// After got user info
+// 1、Save user info
+// 2、Redirect request
+var user = {openid: "abc"};
+user.username = uuid.v1();
+user.password = '123456';
 
-// lean.sendSMS("15267607491", function(res) {
-//   console.log(res.body);
-// })
+var s = new Date();
 
-/*
-lean.verifySMS("15267607491", "264798", function(res) {
-  console.log(res.body);
-})
-*/
+leancloud.create('_User', user, function(response) {
 
-lean.feedback("1002183272", "添加功能abc", function(res) {
-  console.log(res.body);
-})
-//264798
+  var t = (new Date()).getTime() - s.getTime();
+  console.log(t);
+
+  /*console.log(response.body);
+  res.contentType("application/json; charset=utf-8")
+  res.end("info: " + response.body);*/
+});
+

@@ -1,14 +1,17 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
+var express     = require('express');
+var path        = require('path');
+var favicon     = require('serve-favicon');
+var logger      = require('morgan');
 var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+var bodyParser  = require('body-parser');
 
 var app = express();
 
-// view engine setup
+// set view path
 app.set('views', path.join(__dirname, 'views'));
+
+// set view engine
+require('./lib/viewEngine')(app);
 app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
@@ -21,12 +24,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 
-
 app.use('/',          require('./routes/index'));
-app.use('/wx/robot',  require('./routes/wx-robot/wx-robot'));
 app.use('/users',     require('./routes/users'));
 app.use('/user',      require('./routes/user/index'));
-app.use('/user',      require('./routes/user/wx-auth'));
+
+app.use('/wechat/robot',  require('./routes/wechat/robot'));
+app.use('/wechat/auth',   require('./routes/wechat/auth'));
+app.get('/wechat', function(req, res) {
+  console.log("" + req.headers.host + req.url);
+  res.render('wechat/wechat', {wx: req});
+});
 
 
 // catch 404 and forward to error handler
