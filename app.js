@@ -1,21 +1,26 @@
+process.env.NODEJS_DEBUG = false;
+
 var express     = require('express');
 var path        = require('path');
 var favicon     = require('serve-favicon');
 var logger      = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser  = require('body-parser');
+var debug       = process.env.NODEJS_DEBUG === undefined ? false : process.env.NODEJS_DEBUG;
 
 var app = express();
 
+
 // set view path
 app.set('views', path.join(__dirname, 'views'));
+
 
 // set view engine
 require('./lib/viewEngine')(app);
 app.set('view engine', 'jade');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
+
+app.use(favicon(__dirname + '/public/favicon.png'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

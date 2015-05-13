@@ -5,7 +5,7 @@ var crypto    = require('crypto');
 var xmlbuilder= require('xmlbuilder');
 var config    = require('../../config/wechat');
 var xmlBodyParser = require('../../lib/xmlBodyParser');
-var debug     = true;
+var debug     = process.env.NODEJS_DEBUG === undefined ? false : process.env.NODEJS_DEBUG;
 
 router.all('/', xmlBodyParser);
 /**
