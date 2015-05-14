@@ -1,0 +1,86 @@
+doctype html
+html.no-js
+  head
+    meta(charset='UTF-8')
+    base(href='/admin/')
+    title Metis
+
+    // IE Compatibility modes
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+
+    // Mobile first
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+
+    // Bootstrap
+    link(rel='stylesheet', href='assets/lib/bootstrap/css/bootstrap.min.css')
+    link(rel='stylesheet', type='text/css', href='http://cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css')
+    link(rel='stylesheet', type='text/css', href='http://cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css')
+
+    // Font Awesome
+    link(rel='stylesheet', href='assets/lib/font-awesome/css/font-awesome.min.css')
+
+    // Metis core stylesheet
+    link(rel='stylesheet', href='assets/css/main.min.css')
+
+    // metisMenu stylesheet
+    link(rel='stylesheet', href='assets/lib/metismenu/metisMenu.min.css')
+
+    // For Development Only. Not required
+    script.
+      less = {
+      env: "development",
+      relativeUrls: false,
+      rootpath: "../assets/"
+      };
+
+    link(rel='stylesheet', href='assets/css/style-switcher.css')
+    link(rel='stylesheet/less', type='text/css', href='assets/css/less/theme.less')
+    script(src='assets/lib/less/less-1.7.5.min.js')
+
+    // Modernizr 2.8.2
+    script(src='assets/lib/modernizr/modernizr.min.js')
+  body
+    #wrap.bg-dark.dk
+      include ./header.jade
+
+      include ./left.jade
+
+      block content
+        h1 content is here.
+
+      include ./right.jade
+
+    include ./footer.jade
+
+    // #helpModal
+    #helpModal.modal.fade
+      .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+            h4.modal-title Modal title
+          .modal-body
+            p
+              | Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
+              | in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          .modal-footer
+            button.btn.btn-default(type='button', data-dismiss='modal') Close
+
+    // jQuery 2.1.1
+    script(src='assets/lib/jquery/jquery.min.js')
+
+    // Bootstrap
+    script(src='assets/lib/bootstrap/js/bootstrap.min.js')
+
+    // MetisMenu
+    script(src='assets/lib/metismenu/metisMenu.min.js')
+
+    // Screenfull
+    script(src='assets/lib/screenfull/screenfull.js')
+
+    // Metis core scripts
+    script(src='assets/js/core.min.js')
+
+    // Metis demo scripts
+    script(src='assets/js/app.min.js')
+    script(src='assets/js/style-switcher.min.js')

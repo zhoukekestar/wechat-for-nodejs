@@ -1,4 +1,4 @@
-process.env.NODEJS_DEBUG = false;
+process.env.NODEJS_DEBUG = true;
 
 var express     = require('express');
 var path        = require('path');
@@ -39,6 +39,7 @@ app.get('/wechat', function(req, res) {
   console.log("" + req.headers.host + req.url);
   res.render('wechat/wechat', {wx: req});
 });
+app.use('/admin',     require('./routes/admin/index'));
 
 
 // catch 404 and forward to error handler

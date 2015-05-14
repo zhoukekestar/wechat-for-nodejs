@@ -1,0 +1,69 @@
+
+#top
+  // .navbar
+  nav.navbar.navbar-inverse.navbar-static-top
+    .container-fluid
+      // Brand and toggle get grouped for better mobile display
+      header.navbar-header
+        button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-ex1-collapse')
+          span.sr-only Toggle navigation
+          span.icon-bar
+          span.icon-bar
+          span.icon-bar
+        a.navbar-brand(href='index.html')
+          img(src='assets/img/logo.png', alt='')
+      .topnav
+        .btn-group
+          a#toggleFullScreen.btn.btn-default.btn-sm(data-placement='bottom', data-original-title='全屏', data-toggle='tooltip')
+            i.glyphicon.glyphicon-fullscreen
+        .btn-group
+          a.btn.btn-default.btn-sm(data-placement='bottom', data-original-title='邮箱', data-toggle='tooltip')
+            i.fa.fa-envelope
+            span.label.label-warning 5
+          a.btn.btn-default.btn-sm(data-placement='bottom', data-original-title='消息', href='#', data-toggle='tooltip')
+            i.fa.fa-comments
+            span.label.label-danger 4
+          a.btn.btn-default.btn-sm(data-toggle='modal', data-original-title='帮助', data-placement='bottom', href='#helpModal')
+            i.fa.fa-question
+        .btn-group
+          a.btn.btn-metis-1.btn-sm(href='login.html', data-toggle='tooltip', data-original-title='注销', data-placement='bottom')
+            i.fa.fa-power-off
+        .btn-group
+          a#menu-toggle.btn.btn-primary.btn-sm.toggle-left(data-placement='bottom', data-original-title='显示/隐藏 左侧栏', data-toggle='tooltip')
+            i.fa.fa-bars
+          a.btn.btn-default.btn-sm.toggle-right(data-placement='bottom', data-original-title='显示/隐藏 右侧栏', data-toggle='tooltip')
+            span.glyphicon.glyphicon-comment
+      .collapse.navbar-collapse.navbar-ex1-collapse
+        // .nav
+        ul.nav.navbar-nav
+          li
+            a(href='dashboard.html') 图表
+          li
+            a(href='table.html') 表格
+          li
+            a(href='file.html') 文件管理
+          li.dropdown
+            a.dropdown-toggle(href='#', data-toggle='dropdown') 表单元素
+              b.caret
+            ul.dropdown-menu
+              li
+                a(href='form-general.html') General
+              li
+                a(href='form-validation.html') Validation
+              li
+                a(href='form-wysiwyg.html') WYSIWYG
+              li
+                a(href='form-wizard.html') Wizard & File Upload
+
+  header.head
+    .search-bar
+      form.main-search(action='')
+        .input-group
+          input.form-control(type='text', placeholder='在线搜索 ...')
+          span.input-group-btn
+            button.btn.btn-primary.btn-sm.text-muted(type='button')
+              i.fa.fa-search
+    .main-bar
+      h3
+        i.fa.fa-home 主页
+

@@ -1,21 +1,30 @@
-var leancloud = require('./lib/leancloud.js');
-var uuid = require('uuid');
-// After got user info
-// 1、Save user info
-// 2、Redirect request
-var user = {openid: "abc"};
-user.username = uuid.v1();
-user.password = '123456';
+var bunyan = require('bunyan');
 
-var s = new Date();
+var log = require('bunyan').createLogger({name: "admin-index", streams: require('./lib/logformat')});
 
-leancloud.create('_User', user, function(response) {
 
-  var t = (new Date()).getTime() - s.getTime();
-  console.log(t);
+// var bunyan = require('bunyan');
 
-  /*console.log(response.body);
-  res.contentType("application/json; charset=utf-8")
-  res.end("info: " + response.body);*/
-});
+// function MyRawStream() {}
+// MyRawStream.prototype.write = function (rec) {
+//     console.log('[%s] %s: %s',
+//         rec.time.toISOString(),
+//         bunyan.nameFromLevel[rec.level],
+//         rec.msg);
+// }
 
+// var log = bunyan.createLogger({
+//     name: 'play',
+//     streams: [
+//         {
+//             level: 'info',
+//             stream: new MyRawStream(),
+//             type: 'raw'
+//         }
+//     ]
+// });
+
+log.info('hi on info');
+
+log.info("hi");
+log.debug("nihao");
