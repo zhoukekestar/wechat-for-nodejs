@@ -1,0 +1,73 @@
+extend ../common/layout.jade
+block head
+  title 发送消息
+  style.
+    form{
+      max-width: 500px;
+      margin: 10px auto;
+    }
+    .tab-content {
+      padding: 10px;
+    }
+block content
+  div(role='tabpanel')
+    ul.nav.nav-tabs(role='tablist')
+      li.active(role='presentation'): a(href='#text', aria-controls='profile', role='tab', data-toggle='tab') 文本
+      //- li(role='presentation'): a(href='#image', aria-controls='profile', role='tab', data-toggle='tab') 图片
+      li(role='presentation'): a(href='#news', aria-controls='profile', role='tab', data-toggle='tab') 图文
+    .tab-content
+      #text.tab-pane.active(role='tabpanel')
+        form.text
+          input(type='hidden', name='type', value='text')
+          .form-group
+            textarea.form-control(name='content', row='3', placeholder='消息')
+          .form-group.text-center
+            button.btn.btn-primary(type='submit') 发送
+      //- #image.tab-pane(role='tabpanel')
+      //-   h4 图片
+      #news.tab-pane(role='tabpanel')
+        form.news
+          input(type='hidden', name='type', value='news')
+          .form-group
+            input.form-control(name='title', placeholder='标题')
+          .form-group
+            textarea.form-control(name='description', placeholder='描述')
+          .form-group
+            input.form-control(name='url', placeholder='链接地址')
+          .form-group
+            input.form-control(name='picurl', placeholder='图片地址')
+          .form-group.text-center
+            button.btn.btn-primary(type='submit') 发送
+block foot
+  script.
+    $(function(){
+
+      function getFormData($f) {
+        var arr = $f.serializeArray();
+        var res = {};
+        arr.forEach(function(t){
+          res[t.name] = t.value;
+        });
+        return JSON.stringify(res);
+      }
+      $('form button[type="submit"]').click(function(e){
+
+        e.preventDefault()
+
+        var $f = $(this).parents('form');
+        $.ajax({
+          type: 'POST',
+          url: '/wechat/robot/msg?openid=o3ebHjp1_Acae0IxOlK4B1IWG3fQ',
+          contentType: "application/json",
+          data: getFormData($f),
+          success: function(d) {
+            if (d.errcode == 0) {
+              alert('发送成功');
+            } else {
+              alert(d.errmsg);
+            }
+          }
+        });
+
+      });
+    });

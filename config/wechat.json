@@ -1,0 +1,25 @@
+{
+  "subscribe": "老板，您来了！/色\n手机开店哪家强？/奋斗\n浙江蓝麦找土冒！/得意\n店铺管理省心省力/呲牙\n宣传推广定时定位/大兵\n定位逛街全城推送/酷\n一键收藏随时关注/可爱\n马上加入我们吧！！！/坏笑\n\n/强点击链接下载土冒官方APP    http://m.toomao.com/toomao_mobile/download/握手",
+  "subscribe2": "老板，您来了！/色\n手机开店哪家强？/奋斗\n浙江蓝麦找土冒！/得意\n店铺管理省心省力/呲牙\n宣传推广定时定位/大兵\n定位逛街全城推送/酷\n一键收藏随时关注/可爱\n马上加入我们吧！！！/坏笑\n\n/强点击链接下载土冒官方APP    http://m.toomao.com/toomao_mobile/download/握手",
+  "unsubscribe": "可惜了，好多活动都参加不了呢。。。",
+  "CHECKIN": "您已签到成功",
+  "keywords": [
+    {
+      "word": "文字",
+      "reply": "文字回复"
+    },
+    {
+      "word": "图文,文图",
+      "reply": {
+        "title": "标题",
+        "desc": "...描述",
+        "pic": "https://mmbiz.qlogo.cn/mmbiz/YYdskfppLxdf3fC6WRA2RYocOvAapRBvsiaeTvkpxD9qlsLA9R07Y0G1KBBkJ7X83hia9WpFmyDHkkiasjSDn1B2Q/0?wx_fmt=jpeg",
+        "url": "http://www.baidu.com"
+      }
+    },
+    {
+      "word": "aaa",
+      "reply": "reply"
+    }
+  ]
+}

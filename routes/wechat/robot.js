@@ -1,12 +1,19 @@
 var express   = require('express');
 var router    = express.Router();
 var crypto    = require('crypto');
-var unirest = require('unirest');
+var unirest   = require('unirest');
 var xmlbuilder= require('xmlbuilder');
 var config    = require('../../config/wechat');
 var wechat    = require('../../lib/wechat');
 var xmlBodyParser = require('../../lib/xmlBodyParser');
-var debug     = process.env.NODEJS_DEBUG === undefined ? false : process.env.NODEJS_DEBUG;
+
+var log       = require('bunyan').createLogger({name: "wechat/robot", streams: require('../../lib/logformat')});
+var lowdb     = require('lowdb');
+var db        = lowdb('./config/wechat.json');
+// var obj = db.object;
+
+// obj.zkk = "zkk.obj";
+// db.save();
 
 router.all('/', xmlBodyParser);
 /**
@@ -23,7 +30,7 @@ router.get('/', function(req, res) {
 });
 
 /**
- * 处理POST请求
+ * 处理POST请求，处理消息的主体代码
  * @param req
  * @param res
  */
@@ -34,18 +41,129 @@ router.post('/', function (req, res) {
   }*/
 
   res.contentType('text/xml');
-  var xml = buildXml(req, {
-    MsgType: 'text',
-    Content: 'reply by server:' + req.body.xml.Content[0]
-  });
-  xml += "";
+  var xml = req.body.xml;
 
-  if (debug) {
-    console.log("res: " + xml);
+  // 订阅事件
+  if (xml.MsgType === 'event' && xml.Event === 'subscribe') {
+
+    sendSimpleMsg(req, res, db.object.subscribe);
+
+
+  // 取消订阅事件
+  } else if (xml.MsgType === 'event' && xml.Event === 'unsubscribe') {
+
+    sendSimpleMsg(req, res, db.object.unsubscribe);
+
+  // 点击菜单事件
+  } else if (xml.MsgType === 'event' && xml.Event === 'CLICK') {
+
+    // 点击签到
+    if (xml.EventKey === 'CHECKIN') {
+
+      sendSimpleMsg(req, res, db.object.CHECKIN);
+
+    } else {
+
+      var rxml= buildXml(req, {
+        MsgType: 'text',
+        Content: db.object.unsubscribe
+      });
+
+      rxml += '';
+      log.debug('res: ' + rxml);
+      res.end(rxml);
+    }
+
+  // 接收文本消息
+  } else if (xml.MsgType === 'text') {
+
+    // 设置订阅消息
+    if (xml.Content.indexOf('#subscribe#') != -1) {
+      db.object.subscribe = xml.Content.substr(11);
+      db.save();
+      sendSimpleMsg(req, res, "已重新设置订阅时的消息:" + db.object.subscribe);
+
+    } else{
+
+      // 过滤关键字
+      db.object.keywords.forEach(function(obj){
+
+        obj.word.split(',').forEach(function(w){
+
+          // 关键字匹配上之后，发送相应的消息
+          // 处理后，跳出函数，避免小黄鸡处理
+          if (w === xml.Content.trim()) {
+
+            // 发送文本消息
+            if (typeof obj.reply === 'string') {
+
+              sendSimpleMsg(req, res, obj.reply);
+
+            // 发送图文消息
+            } else {
+              sendSimpleNews(req, res, obj.reply.title, obj.reply.desc, obj.reply.pic, obj.reply.url);
+            }
+
+            return;
+          }
+        });
+
+      });
+
+      // 小黄鸡机器人自动回复
+      unirest.post('http://www.niurenqushi.com/app/simsimi/ajax.aspx')
+        .header('Cookie', 'Hm_lvt_a03ca47d40cee1509f846cf6dfb38778=1431927186; Hm_lpvt_a03ca47d40cee1509f846cf6dfb38778=1431927186; bdshare_firstime=1431927183823')
+        .send({txt: xml.Content})
+        .end(function(result){
+          if (result.body === undefined) {
+
+            sendSimpleMsg(req, res, '我凌乱了。。。');
+
+          } else if (result.body.indexOf('<h1>') !== -1) {
+            sendSimpleMsg(req, res, '我只收到一串乱码');
+
+          } else {
+            sendSimpleMsg(req, res, result.body);
+          }
+        });
+
+
+    }
+  // 其他事件
+  } else {
+
+    sendSimpleMsg(req, res, '不太懂您的意思。。。您能打字吗？');
+
+  }
+});
+
+
+/**
+ * 获取keywords
+
+http://localhost:3000/wechat/robot/keywords
+
+ */
+router.get('/keywords', function(req, res) {
+
+  res.end(JSON.stringify(db.object.keywords));
+});
+
+router.post('/keywords', function(req, res) {
+
+  if (req.query.action === 'post') {
+
+    db.object.keywords.push(req.body);
+
+  } else if (req.query.action === 'delete') {
+    db('keywords').remove({word: req.query.word});
+
+  } else if (req.query.action === 'put') {
+
   }
 
-  res.end(xml);
 });
+
 
 /**
  * 自定义菜单按钮
@@ -96,16 +214,33 @@ router.get('/btn', function(req, res) {
  * @param  {string} msg     消息
  *
 GET http://localhost:3000/wechat/robot/msg?openid=o3ebHjp1_Acae0IxOlK4B1IWG3fQ&msg=hello
+
+POST_BODY:
+
  */
-router.all('/msg', function(req, res) {
-  var msg = {
-    "touser": req.query.openid,
-    "msgtype":"text",
-    "text":
-    {
-      "content": req.query.msg
+router.post('/msg', function(req, res) {
+  var body = req.body;
+  var msg = {};
+  if (body.type === 'text') {
+    msg = {
+      "touser": req.query.openid,
+      "msgtype":"text",
+      "text": body
     }
+  } else if (body.type === 'news') {
+    msg = {
+      "touser": req.query.openid,
+      "msgtype":"news",
+      "news": {
+        "articles": [
+          body
+        ]
+      }
+    };
+  } else {
+
   }
+
   wechat.getAccessToken(function(token) {
 
     unirest
@@ -124,10 +259,10 @@ function buildXml(req, obj) {
   var xmlObj = {
     xml: {
       ToUserName: {
-        "#cdata": req.body.xml.FromUserName[0]
+        "#cdata": req.body.xml.FromUserName
       },
       FromUserName: {
-        "#cdata": req.body.xml.ToUserName[0]
+        "#cdata": req.body.xml.ToUserName
       },
       CreateTime: (new Date()).getTime(),
       MsgType: {
@@ -143,19 +278,16 @@ function buildXml(req, obj) {
   // TODO: other types
   } else if (obj.MsgType === 'image') {
 
-    xmlObj.xml.Image = {
-      MediaId: {
-        "#cdata": 'media_id'
-      }
-    };
 
+  } else if (obj.MsgType === 'news') {
+
+    xmlObj.xml.ArticleCount = obj.ArticleCount;
+    xmlObj.xml.Articles = obj.Articles;
   }
 
   xmlObj = xmlbuilder.create(xmlObj);
 
-  if (debug) {
-    console.log(xmlObj.end({pretty: true}));
-  }
+  //log.debug(xmlObj.end({pretty: true}));
 
   return xmlObj.end().substr(21);
 }
@@ -174,11 +306,47 @@ function checkSource(req) {
       arr       = [token, timestamp, nonce];
   shasum.update(arr.sort().join(''));
 
-  if (debug) {
-    console.log(arr.sort().join(',') + "," + signature);
-  }
+  log.debug(arr.sort().join(',') + "," + signature);
 
-  return shasum.digest('hex') == signature;
+  return shasum.digest('hex') === signature;
+}
+
+function sendSimpleMsg(req, res, msg) {
+  var rxml= buildXml(req, {
+    MsgType: 'text',
+    Content: msg
+  });
+
+  rxml += '';
+  log.debug('res: ' + rxml);
+  res.end(rxml);
+}
+
+function sendSimpleNews(req, res, title, desc, pic, url) {
+  var rxml = buildXml(req, {
+    MsgType: 'news',
+    ArticleCount: 1,
+    Articles: {
+      item: {
+        Title: {
+          "#cdata": title
+        },
+        Description: {
+          "#cdata": desc
+        },
+        PicUrl: {
+          "#cdata": pic
+        },
+        Url: {
+          "#cdata": url
+        }
+      }
+    }
+  });
+  rxml += '';
+  log.debug('res: ' + rxml);
+  res.end(rxml);
+
 }
 
 module.exports = router;

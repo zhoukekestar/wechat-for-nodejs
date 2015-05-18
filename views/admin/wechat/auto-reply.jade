@@ -1,0 +1,210 @@
+extend ../common/layout.jade
+block head
+  title 设置自动回复
+  style.
+    .subscribe {
+      max-width: 500px;
+      margin: 10px auto;
+    }
+    .tab-content {
+      padding: 10px;
+    }
+    .add-btns {
+      margin-bottom: 1em;
+    }
+    .block-text, .block-news {
+      background-color: #F0F0F0;
+      border: solid 1px #ccc;
+      border-radius: .5em;
+      padding: 1em;
+      width: 100%;
+      margin-bottom: 1em;
+    }
+    .block-text h4, .block-news h4{
+      border-bottom: solid 1px #999;
+    }
+    .block-foot {
+      margin-top: 20px;
+    }
+    .block-news img{
+      width: 100%;
+    }
+block content
+  div(role='tabpanel')
+    ul.nav.nav-tabs(role='tablist')
+      li.active(role='presentation'): a(href='#add', aria-controls='profile', role='tab', data-toggle='tab') 订阅
+      li(role='presentation'): a(href='#message', aria-controls='profile', role='tab', data-toggle='tab') 消息
+      li(role='presentation'): a(href='#keywords', aria-controls='profile', role='tab', data-toggle='tab') 关键字
+    .tab-content
+      #add.tab-pane.active(role='tabpanel')
+        form.subscribe
+          .form-group
+            textarea.form-control(row='3', placeholder='这儿填写被添加时的自动回复')
+          .form-group.text-center
+            button.btn.btn-primary(type='submit') 保存
+          p 您也可以发送"#subscribe#" + 消息 来修改订阅消息，如"#subscribe# 您终于订阅我们了~~"
+      #message.tab-pane(role='tabpanel')
+        h4 目前由小黄鸡代替
+      #keywords.tab-pane(role='tabpanel')
+        .text-center.add-btns
+          button.btn.btn-primary(type='button', data-toggle='modal', data-target='#add-text') 添加文字回复
+          button.btn.btn-primary(type='button', data-toggle='modal', data-target='#add-news') 添加图文回复
+
+        .container-fluid.row
+          - for (var x = 0; x < 12; x++)
+            .col-xs-12.col-sm-6.col-md-4.col-lg-3
+              .block-text
+                h4 关键字
+                .block-content
+                  p 回复
+                .block-foot.text-center
+                  button.btn.btn-primary 编辑
+                  button.btn.btn-danger 删除
+            .col-xs-12.col-sm-6.col-md-4.col-lg-3
+              .block-news
+                h4 关键字2
+                  small 标题
+                .block-content
+                  img(src='https://mmbiz.qlogo.cn/mmbiz/YYdskfppLxdf3fC6WRA2RYocOvAapRBvsiaeTvkpxD9qlsLA9R07Y0G1KBBkJ7X83hia9WpFmyDHkkiasjSDn1B2Q/0?wx_fmt=jpeg')
+                  p 描述
+                .block-foot.text-center
+                  button.btn.btn-primary 编辑
+                  button.btn.btn-danger 删除
+
+  //- 添加文字回复
+  #add-text.modal.fade(role='dialog', aria-hidden='true')
+    .modal-dialog
+      .modal-content
+        .modal-header
+          button.close(type='button', data-dismiss='modal', aria-label='Close')
+          h4.modal-title 添加文字回复
+        .modal-body
+          form
+            .form-group
+              input.form-control(name='keyword', placeholder='关键字')
+            .form-group
+              textarea.form-control(name='text', placeholder='文本消息')
+
+        .modal-footer
+          button.btn.btn-primary(data-dismiss='modal') 关闭
+          button.btn.btn-success 添加
+  //- 添加图文回复
+  #add-news.modal.fade(role='dialog', aria-hidden='true')
+    .modal-dialog
+      .modal-content
+        .modal-header
+          button.close(type='button', data-dismiss='modal', aria-label='Close')
+          h4.modal-title 添加文字回复
+        .modal-body
+           form.news
+            .form-group
+              input.form-control(name='keyword', placeholder='关键字')
+            .form-group
+              input.form-control(name='title', placeholder='标题')
+            .form-group
+              textarea.form-control(name='description', placeholder='描述')
+            .form-group
+              input.form-control(name='url', placeholder='链接地址')
+            .form-group
+              input.form-control(name='picurl', placeholder='图片地址')
+
+        .modal-footer
+          button.btn.btn-primary(data-dismiss='modal') 关闭
+          button.btn.btn-success 添加
+
+  //- 修改图文消息模板
+  table.table1.hide
+    tr
+      td.keyword
+      td
+        form.news
+          input(type='hidden', name='type', value='news')
+          .form-group
+            input.form-control(name='title', placeholder='标题')
+          .form-group
+            textarea.form-control(name='description', placeholder='描述')
+          .form-group
+            input.form-control(name='url', placeholder='链接地址')
+          .form-group
+            input.form-control(name='picurl', placeholder='图片地址')
+      td
+        button.btn.btn-primary 保存
+        button.btn.btn-danger 删除
+  //- 修改文本消息模板
+  table.table2.hide
+    tr
+      td.keyword
+      td
+        form.textarea
+          .form-group
+            input.form-control(name='text', placeholder='文本消息')
+      td
+        button.btn.btn-primary 保存
+        button.btn.btn-danger 删除
+
+
+block foot
+  script.
+    $(function(){
+
+      var list = [
+        {
+          selector: "#list-1",
+          height: 100
+        },
+        {
+          selector: "#list-2",
+          height: 80
+        },
+        {
+          selector: "#list-3",
+          height: 90
+        }
+      ];
+
+      list.sort(function(l, r){
+        return l.height < r.height ? -1 : 1;
+      });
+
+      console.log(list);
+
+
+      function addFromNew(d) {
+
+
+
+        var o = d.reply;
+        $('.table1 .keyword').html(d.word);
+        $('.table1 input[name="title"]').attr("value", o.title)
+        $('.table1 textarea[name="description"]').html(o.desc)
+        $('.table1 input[name="picurl"]').attr("value", o.pic)
+        $('.table1 input[name="url"]').attr("value", o.url)
+
+        $(".table.keywords").append($('.table1 tbody').html());
+        //return $('.table1').appendTo();
+      }
+
+      function addFormText(d) {
+        $('.table2 .keyword').html(d.word);
+        $('.table2 input[name="text"]').attr("value", d.reply);
+
+        $(".table.keywords").append($('.table2 tbody').html());
+        //return $('.table2');
+      }
+
+      function init() {
+        $.getJSON('/wechat/robot/keywords', function(data){
+
+          console.log(data)
+          data.forEach(function(d) {
+            if (typeof d.reply === 'string') {
+              addFormText(d)
+            } else {
+              addFromNew(d);
+            }
+          });
+        });
+      }
+      init();
+
+    });
