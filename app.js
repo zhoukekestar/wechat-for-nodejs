@@ -10,6 +10,8 @@ var debug       = process.env.NODEJS_DEBUG === undefined ? false : process.env.N
 
 var app = express();
 
+console.log(JSON.stringify(process.env));
+console.log(__filename);
 
 // set view path
 app.set('views', path.join(__dirname, 'views'));

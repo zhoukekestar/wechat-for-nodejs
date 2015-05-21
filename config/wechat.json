@@ -5,21 +5,29 @@
   "CHECKIN": "您已签到成功",
   "keywords": [
     {
-      "word": "文字",
-      "reply": "文字回复"
-    },
-    {
-      "word": "图文,文图",
+      "words": "图文,文图",
       "reply": {
         "title": "标题",
-        "desc": "...描述",
+        "desc": "123...描述",
         "pic": "https://mmbiz.qlogo.cn/mmbiz/YYdskfppLxdf3fC6WRA2RYocOvAapRBvsiaeTvkpxD9qlsLA9R07Y0G1KBBkJ7X83hia9WpFmyDHkkiasjSDn1B2Q/0?wx_fmt=jpeg",
-        "url": "http://www.baidu.com"
+        "url": "http://www.baidu.com/abc"
       }
     },
     {
-      "word": "aaa",
-      "reply": "reply"
+      "words": "zkk-1",
+      "reply": "no.1"
+    },
+    {
+      "words": "zkk2,zkk3",
+      "reply": "zkk2 is best.!!"
+    },
+    {
+      "words": "文字",
+      "reply": "文字回复，测试"
+    },
+    {
+      "words": "lala,啦啦",
+      "reply": "好开心的哦"
     }
   ]
 }

@@ -2,7 +2,7 @@ extend ../common/layout.jade
 block head
   title 发送消息
   style.
-    form{
+    form {
       max-width: 500px;
       margin: 10px auto;
     }
@@ -42,30 +42,17 @@ block foot
   script.
     $(function(){
 
-      function getFormData($f) {
-        var arr = $f.serializeArray();
-        var res = {};
-        arr.forEach(function(t){
-          res[t.name] = t.value;
-        });
-        return JSON.stringify(res);
-      }
       $('form button[type="submit"]').click(function(e){
 
-        e.preventDefault()
+        e.preventDefault();
 
-        var $f = $(this).parents('form');
-        $.ajax({
-          type: 'POST',
-          url: '/wechat/robot/msg?openid=o3ebHjp1_Acae0IxOlK4B1IWG3fQ',
-          contentType: "application/json",
-          data: getFormData($f),
-          success: function(d) {
-            if (d.errcode == 0) {
-              alert('发送成功');
-            } else {
-              alert(d.errmsg);
-            }
+        common.postJSON('/wechat/robot/msg?openid=o3ebHjp1_Acae0IxOlK4B1IWG3fQ',
+          common.getFormJSON($(this).parents('form')),
+          function(d){
+          if (d.code == 0) {
+            alert('发送成功');
+          } else {
+            alert(d.msg);
           }
         });
 

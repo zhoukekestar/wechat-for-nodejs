@@ -42,7 +42,9 @@ block content
             textarea.form-control(row='3', placeholder='这儿填写被添加时的自动回复')
           .form-group.text-center
             button.btn.btn-primary(type='submit') 保存
-          p 您也可以发送"#subscribe#" + 消息 来修改订阅消息，如"#subscribe# 您终于订阅我们了~~"
+          p 如果需要发送表情，您也可以发送“#subscribe# + 消息 ”来修改订阅消息
+          p 如“#subscribe# 您终于订阅我们了~~”
+          p 修改成功后，您可以取消订阅后再次订阅来查看效果
       #message.tab-pane(role='tabpanel')
         h4 目前由小黄鸡代替
       #keywords.tab-pane(role='tabpanel')
@@ -51,25 +53,29 @@ block content
           button.btn.btn-primary(type='button', data-toggle='modal', data-target='#add-news') 添加图文回复
 
         .container-fluid.row
-          - for (var x = 0; x < 12; x++)
-            .col-xs-12.col-sm-6.col-md-4.col-lg-3
-              .block-text
-                h4 关键字
-                .block-content
-                  p 回复
-                .block-foot.text-center
-                  button.btn.btn-primary 编辑
-                  button.btn.btn-danger 删除
-            .col-xs-12.col-sm-6.col-md-4.col-lg-3
-              .block-news
-                h4 关键字2
-                  small 标题
-                .block-content
-                  img(src='https://mmbiz.qlogo.cn/mmbiz/YYdskfppLxdf3fC6WRA2RYocOvAapRBvsiaeTvkpxD9qlsLA9R07Y0G1KBBkJ7X83hia9WpFmyDHkkiasjSDn1B2Q/0?wx_fmt=jpeg')
-                  p 描述
-                .block-foot.text-center
-                  button.btn.btn-primary 编辑
-                  button.btn.btn-danger 删除
+
+  //- 文字回复模板
+  .template-text.hide
+    .col-xs-12.col-sm-6.col-md-4.col-lg-3
+      .block-text
+        h4 关键字
+        .block-content
+          p 回复
+        .block-foot.text-center
+          button.btn.btn-primary 编辑
+          button.btn.btn-danger 删除
+  //- 图文回复模板
+  .template-news.hide
+    .col-xs-12.col-sm-6.col-md-4.col-lg-3
+      .block-news
+        h4 关键字2
+        small 标题
+        .block-content
+          img(src='')
+          p 描述
+        .block-foot.text-center
+          button.btn.btn-primary 编辑
+          button.btn.btn-danger 删除
 
   //- 添加文字回复
   #add-text.modal.fade(role='dialog', aria-hidden='true')
@@ -80,10 +86,11 @@ block content
           h4.modal-title 添加文字回复
         .modal-body
           form
+            input(type='hidden', name='type', value='text')
             .form-group
-              input.form-control(name='keyword', placeholder='关键字')
+              input.form-control(name='words', placeholder='关键字，多个关键字用英文逗号（半角）分开')
             .form-group
-              textarea.form-control(name='text', placeholder='文本消息')
+              textarea.form-control(name='reply', placeholder='文本消息')
 
         .modal-footer
           button.btn.btn-primary(data-dismiss='modal') 关闭
@@ -96,115 +103,160 @@ block content
           button.close(type='button', data-dismiss='modal', aria-label='Close')
           h4.modal-title 添加文字回复
         .modal-body
-           form.news
+           form
+            input(type='hidden', name='type', value='news')
             .form-group
-              input.form-control(name='keyword', placeholder='关键字')
+              input.form-control(name='words', placeholder='关键字，多个关键字用英文逗号（半角）分开')
             .form-group
               input.form-control(name='title', placeholder='标题')
             .form-group
-              textarea.form-control(name='description', placeholder='描述')
+              textarea.form-control(name='desc', placeholder='描述')
             .form-group
               input.form-control(name='url', placeholder='链接地址')
             .form-group
-              input.form-control(name='picurl', placeholder='图片地址')
+              input.form-control(name='pic', placeholder='图片地址')
 
         .modal-footer
           button.btn.btn-primary(data-dismiss='modal') 关闭
           button.btn.btn-success 添加
+  //- 编辑文字回复
+  #edit-text.modal.fade(role='dialog', aria-hidden='true')
+    .modal-dialog
+      .modal-content
+        .modal-header
+          button.close(type='button', data-dismiss='modal', aria-label='Close')
+          h4.modal-title 修改文字回复
+        .modal-body
+          form
+            input(type='hidden', name='type', value='text')
+            input(type='hidden', name='words')
+            .form-group
+              input.form-control(name='words', disabled)
+            .form-group
+              textarea.form-control(name='reply', placeholder='文本消息')
 
-  //- 修改图文消息模板
-  table.table1.hide
-    tr
-      td.keyword
-      td
-        form.news
-          input(type='hidden', name='type', value='news')
-          .form-group
-            input.form-control(name='title', placeholder='标题')
-          .form-group
-            textarea.form-control(name='description', placeholder='描述')
-          .form-group
-            input.form-control(name='url', placeholder='链接地址')
-          .form-group
-            input.form-control(name='picurl', placeholder='图片地址')
-      td
-        button.btn.btn-primary 保存
-        button.btn.btn-danger 删除
-  //- 修改文本消息模板
-  table.table2.hide
-    tr
-      td.keyword
-      td
-        form.textarea
-          .form-group
-            input.form-control(name='text', placeholder='文本消息')
-      td
-        button.btn.btn-primary 保存
-        button.btn.btn-danger 删除
+        .modal-footer
+          button.btn.btn-primary(data-dismiss='modal') 关闭
+          button.btn.btn-success 保存
+  //- 编辑图文回复
+  #edit-news.modal.fade(role='dialog', aria-hidden='true')
+    .modal-dialog
+      .modal-content
+        .modal-header
+          button.close(type='button', data-dismiss='modal', aria-label='Close')
+          h4.modal-title 编辑文字回复
+        .modal-body
+           form
+            input(type='hidden', name='type', value='news')
+            input(type='hidden', name='words')
+            .form-group
+              input.form-control(name='words', disabled)
+            .form-group
+              input.form-control(name='title', placeholder='标题')
+            .form-group
+              textarea.form-control(name='desc', placeholder='描述')
+            .form-group
+              input.form-control(name='url', placeholder='链接地址')
+            .form-group
+              input.form-control(name='pic', placeholder='图片地址')
 
+        .modal-footer
+          button.btn.btn-primary(data-dismiss='modal') 关闭
+          button.btn.btn-success 保存
 
 block foot
   script.
     $(function(){
 
-      var list = [
-        {
-          selector: "#list-1",
-          height: 100
-        },
-        {
-          selector: "#list-2",
-          height: 80
-        },
-        {
-          selector: "#list-3",
-          height: 90
-        }
-      ];
-
-      list.sort(function(l, r){
-        return l.height < r.height ? -1 : 1;
-      });
-
-      console.log(list);
-
-
-      function addFromNew(d) {
-
-
-
-        var o = d.reply;
-        $('.table1 .keyword').html(d.word);
-        $('.table1 input[name="title"]').attr("value", o.title)
-        $('.table1 textarea[name="description"]').html(o.desc)
-        $('.table1 input[name="picurl"]').attr("value", o.pic)
-        $('.table1 input[name="url"]').attr("value", o.url)
-
-        $(".table.keywords").append($('.table1 tbody').html());
-        //return $('.table1').appendTo();
-      }
-
-      function addFormText(d) {
-        $('.table2 .keyword').html(d.word);
-        $('.table2 input[name="text"]').attr("value", d.reply);
-
-        $(".table.keywords").append($('.table2 tbody').html());
-        //return $('.table2');
-      }
-
+      // 初始化
       function init() {
         $.getJSON('/wechat/robot/keywords', function(data){
 
-          console.log(data)
+          $("#keywords .row").html('');
+
           data.forEach(function(d) {
-            if (typeof d.reply === 'string') {
-              addFormText(d)
+            if (typeof d.reply !== 'string') {
+              $('.template-news h4').html(d.words);
+              $('.template-news small').html(d.reply.title);
+              $('.template-news img').attr("src", d.reply.pic);
+              $('.template-news p').html(d.reply.desc);
+
+              $('.template-news .btn-primary').attr('data-keyword', JSON.stringify(d))
+              $("#keywords .row").append($('.template-news').html());
+
             } else {
-              addFromNew(d);
+
+              $('.template-text h4').html(d.words);
+              $('.template-text p').html(d.reply);
+
+              $('.template-text .btn-primary').attr('data-keyword', JSON.stringify(d))
+
+              $("#keywords .row").append($('.template-text').html());
             }
           });
         });
       }
       init();
+
+
+      // 编辑按钮，弹出修改框
+      $('#keywords').delegate('.block-text .btn-primary, .block-news .btn-primary', 'click', function(){
+        var data = $(this).data('keyword');
+
+        if (typeof data.reply === 'string') {
+
+          $('#edit-text input[name="words"]').val(data.words);
+          $('#edit-text textarea[name="reply"]').html(data.reply);
+
+          $('#edit-text').modal('show');
+
+        } else {
+
+          $('#edit-news input[name="words"]').val(data.words);
+          $('#edit-news input[name="title"]').val(data.reply.title);
+          $('#edit-news textarea[name="desc"]').html(data.reply.desc);
+          $('#edit-news input[name="url"]').val(data.reply.url);
+          $('#edit-news input[name="pic"]').val(data.reply.pic);
+
+          $('#edit-news').modal('show');
+        }
+      });
+
+      // 删除按钮，点击删除
+      $('#keywords').delegate('.block-text .btn-danger, .block-news .btn-danger', 'click', function(){
+        var d = $(this).prev().data('keyword');
+        common.postJSON('/wechat/robot/keywords?action=delete&words=' + d.words,
+          function(d){
+            alert(d.msg);
+            init();
+          }
+        );
+      });
+
+      // 保存按钮，编辑表单，并点击保存按钮
+      $('#edit-text .btn-success, #edit-news .btn-success').click(function(){
+        common.postJSON('/wechat/robot/keywords?action=put',
+          common.getFormJSON($(this).parents('.modal-dialog').find('form')),
+          function(d){
+            $('#edit-text').modal('hide');
+            $('#edit-news').modal('hide');
+            alert(d.msg);
+            init();
+          }
+        );
+      });
+
+      // 添加按钮，添加表单，点击添加
+      $('#add-text .btn-success, #add-news .btn-success').click(function(){
+        common.postJSON('/wechat/robot/keywords?action=post',
+          common.getFormJSON($(this).parents('.modal-dialog').find('form')),
+          function(d){
+            $('#add-text').modal('hide');
+            $('#add-news').modal('hide');
+            alert(d.msg);
+            init();
+          }
+        );
+      });
 
     });

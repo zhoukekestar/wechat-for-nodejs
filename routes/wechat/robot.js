@@ -88,7 +88,7 @@ router.post('/', function (req, res) {
       // 过滤关键字
       db.object.keywords.forEach(function(obj){
 
-        obj.word.split(',').forEach(function(w){
+        obj.words.split(',').forEach(function(w){
 
           // 关键字匹配上之后，发送相应的消息
           // 处理后，跳出函数，避免小黄鸡处理
@@ -146,20 +146,79 @@ http://localhost:3000/wechat/robot/keywords
  */
 router.get('/keywords', function(req, res) {
 
-  res.end(JSON.stringify(db.object.keywords));
+  res.json(db.object.keywords);
 });
 
 router.post('/keywords', function(req, res) {
 
+  // 添加关键字
   if (req.query.action === 'post') {
 
-    db.object.keywords.push(req.body);
+    var d = req.body;
 
+    if (d.type === 'text') {
+      delete d.type;
+
+      db('keywords').push(d);
+      res.json({code:0, msg: '添加成功'});
+    } else if (d.type === 'news') {
+
+      delete d.type;
+      var dd = {
+        words: d.words,
+        reply: {
+          title: d.title,
+          desc: d.desc,
+          pic: d.pic,
+          url: d.url
+        }
+      };
+
+      db('keywords').push(dd);
+      res.json({code:0, msg: '添加成功'});
+    } else {
+      res.json({code: -1, msg: '未知类型'});
+    }
+
+  // 删除关键字
   } else if (req.query.action === 'delete') {
-    db('keywords').remove({word: req.query.word});
 
+    db('keywords').remove({words: req.query.words});
+    res.json({code: 0, msg: 'delete ok'});
+
+  // 修改关键字
   } else if (req.query.action === 'put') {
+    var d = req.body;
 
+    if (d.type === 'text') {
+      delete d.type;
+      db('keywords').remove({words: d.words});
+      db('keywords').push(d);
+      res.json({code:0, msg: '更新成功'});
+    } else if (d.type === 'news') {
+
+      delete d.type;
+      var dd = {
+        words: d.words,
+        reply: {
+          title: d.title,
+          desc: d.desc,
+          pic: d.pic,
+          url: d.url
+        }
+      };
+
+      db('keywords')
+        .chain()
+        .find({words: d.words})
+        .assign(dd)
+        .value();
+      db.save();
+
+      res.json({code:0, msg: '更新成功'});
+    } else {
+      res.json({code: -1, msg: '未知类型'});
+    }
   }
 
 });
@@ -248,7 +307,7 @@ router.post('/msg', function(req, res) {
       .header('Content-Type', 'application/json')
       .send(msg)
       .end(function(response) {
-        res.end(JSON.stringify(response.body));
+        res.json({code: 0, msg: '操作成功', body: response.body});
       });
   });
 
